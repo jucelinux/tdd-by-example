@@ -33,6 +33,15 @@ public class DollarTest {
     }
 
     @Test
+    void testSimpleAddition() {
+        Money five = Money.dollar(5);
+        Expression sum = five.plus(five);
+        Bank bank = new Bank();
+        Money reduced= bank.reduce(sum, "USD");
+        assertEquals(Money.dollar(10), reduced);
+    }
+
+    @Test
     void testReducedSum() {
         Expression sum = new Sum(Money.dollar(3), Money.dollar(4));
         Bank bank = new Bank();
@@ -48,11 +57,15 @@ public class DollarTest {
     }
 
     @Test
-    void testSimpleAddition() {
-        Money five = Money.dollar(5);
-        Expression sum = five.plus(five);
+    public void testIdentityRate() {
+        assertEquals(1, new Bank().rate("USD", "USD"));
+    }
+
+    @Test
+    void testReducedMoneyDifferentCurrency() {
         Bank bank = new Bank();
-        Money reduced= bank.reduce(sum, "USD");
-        assertEquals(Money.dollar(10), reduced);
+        bank.addRate("CHF", "USD", 2);
+        Money result = bank.reduce(Money.franc(2), "USD");
+        assertEquals(Money.dollar(1), result);
     }
 }
